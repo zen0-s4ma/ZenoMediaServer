@@ -904,3 +904,26 @@ services:
       PRINT_CONTAINER_LOG_TAIL: "120"
       RESTART_VPN: "0"
     restart: unless-stopped
+
+
+  dispatcharr:
+    image: ghcr.io/dispatcharr/dispatcharr:latest
+    container_name: dispatcharr
+    network_mode: "service:vpn-stable"
+    depends_on:
+      vpn-stable:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-Europe/Madrid}
+      DISPATCHARR_ENV: aio
+      REDIS_HOST: localhost
+      CELERY_BROKER_URL: redis://localhost:6379/0
+      DISPATCHARR_LOG_LEVEL: ${DISPATCHARR_LOG_LEVEL:-info}
+      NVIDIA_VISIBLE_DEVICES: "all"
+      NVIDIA_DRIVER_CAPABILITIES: "compute,video,utility"
+    volumes:
+      - "E:/Docker_folders/dispatcharr/data:/data"
+      - "E:/Docker_folders/IPTV/m3u:/data/m3us"
+      - "E:/Docker_folders/IPTV/epg:/data/epgs"
+    # - "E:/Docker_folders/epg:/data/epgs:ro"
+    restart: unless-stopped
